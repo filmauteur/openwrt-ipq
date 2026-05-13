@@ -1,7 +1,7 @@
 name: QHora-301W-NSS-Project
 
 on:
-  workflow_dispatch: # 这个配置必须有，否则 Actions 页面不会出现手动运行按钮
+  workflow_dispatch:
 
 jobs:
   build:
