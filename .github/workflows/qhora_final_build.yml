@@ -16,6 +16,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential clang flex bison g++ gawk gcc-multilib g++-multilib gettext git libncurses-dev libssl-dev python3-distutils rsync unzip zlib1g-dev file wget
+          echo "src-git kenzo https://github.com/kenzok8/openwrt-packages" >> feeds.conf.default
+          echo "src-git small https://github.com/kenzok8/small" >> feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -26,6 +28,8 @@ jobs:
           echo "CONFIG_TARGET_qualcommax=y" >> .config
           echo "CONFIG_TARGET_qualcommax_ipq807x=y" >> .config
           echo "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_qnap_qhora-301w=y" >> .config
+          # 微调：在万兆满载时，将网口中断压力平衡到 IPQ8072A 的四个核心上
+          echo "CONFIG_PACKAGE_irqbalance=y" >> .config
           # 常用插件
           echo "CONFIG_PACKAGE_luci=y" >> .config
           echo "CONFIG_PACKAGE_luci-app-turboacc=y" >> .config
