@@ -24,17 +24,30 @@ jobs:
       - name: Device Configuration
         run: |
           cp nss-setup/config-nss.seed .config
-          # 强制写入 301W 的设备信息
+          # 1. 设备定义
           echo "CONFIG_TARGET_qualcommax=y" >> .config
           echo "CONFIG_TARGET_qualcommax_ipq807x=y" >> .config
           echo "CONFIG_TARGET_qualcommax_ipq807x_DEVICE_qnap_qhora-301w=y" >> .config
-          # 微调：在万兆满载时，将网口中断压力平衡到 IPQ8072A 的四个核心上
+          
+          # 2. 中文支持 (全系统 + Xray)
+          echo "CONFIG_PACKAGE_luci-i18n-base-zh-cn=y" >> .config
+          echo "CONFIG_PACKAGE_luci-app-xray=y" >> .config
+          echo "CONFIG_PACKAGE_luci-i18n-xray-zh-cn=y" >> .config
+          
+          # 3. 性能优化插件
           echo "CONFIG_PACKAGE_irqbalance=y" >> .config
-          # 常用插件
+          echo "CONFIG_PACKAGE_luci-app-statistics=y" >> .config
+          
+          # 4. 核心组件
           echo "CONFIG_PACKAGE_luci=y" >> .config
-          echo "CONFIG_PACKAGE_luci-app-turboacc=y" >> .config
           echo "CONFIG_PACKAGE_kmod-qca-nss-drv=y" >> .config
           echo "CONFIG_PACKAGE_kmod-qca-nss-ecm=y" >> .config
+          echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
+          
+          # 5. 移除不需要的重型客户端 (节省空间 & 减少攻击面)
+          sed -i '/CONFIG_PACKAGE_mihomo/d' .config
+          echo "# CONFIG_PACKAGE_mihomo is NOT SET" >> .config
+          
           make defconfig
 
       - name: Build
