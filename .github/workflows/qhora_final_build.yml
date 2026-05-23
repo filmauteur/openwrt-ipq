@@ -42,7 +42,14 @@ jobs:
           echo "CONFIG_PACKAGE_luci=y" >> .config
           echo "CONFIG_PACKAGE_kmod-qca-nss-drv=y" >> .config
           echo "CONFIG_PACKAGE_kmod-qca-nss-ecm=y" >> .config
-          echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
+
+          # 强制剔除 mbedtls，统一使用 openssl
+          sed -i '/CONFIG_PACKAGE_libustream-mbedtls/d' .config
+          sed -i '/CONFIG_PACKAGE_luci-ssl /d' .config
+          echo "# CONFIG_PACKAGE_libustream-mbedtls is NOT SET" >> .config
+          echo "# CONFIG_PACKAGE_luci-ssl is NOT SET" >> .config
+          echo "CONFIG_PACKAGE_libustream-openssl=y" >> .config
+          echo "CONFIG_PACKAGE_luci-ssl-openssl=y" >> .config          
           
           # 5. 移除不需要的重型客户端 (节省空间 & 减少攻击面)
           sed -i '/CONFIG_PACKAGE_mihomo/d' .config
